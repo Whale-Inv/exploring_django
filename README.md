@@ -5,7 +5,7 @@
 Проект имеет следующую структуру:
 - `catalog/` — приложение для работы с каталогом. Содержит:
 - `migrations/` — файлы миграций для базы данных;
-- `templates/` — HTML-шаблоны для отображения страниц (например, `contacts.html`, home.html);
+- `templates/` — HTML-шаблоны для отображения страниц (например, `contacts.html`, `home.html`);
 - `__init__.py`, `admin.py`, `apps.py`, `models.py`, `tests.py`, `urls.py`, `views.py` — основные файлы приложения.
 - `config/` — корневая директория проекта, содержит:
 - `asgi.py` — конфигурация ASGI (Async Server Gateway Interface);
