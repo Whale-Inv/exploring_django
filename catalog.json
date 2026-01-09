@@ -1,0 +1,52 @@
+[
+{
+    "model": "catalog.category",
+    "pk": 1,
+    "fields": {
+        "category_name": "Бакалея",
+        "description": "мучные изделия"
+    }
+},
+{
+    "model": "catalog.category",
+    "pk": 2,
+    "fields": {
+        "category_name": "Молочная продукция",
+        "description": "молоко и производные"
+    }
+},
+{
+    "model": "catalog.category",
+    "pk": 3,
+    "fields": {
+        "category_name": "Фрукты",
+        "description": "плодовые, фрукты разных стран"
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 1,
+    "fields": {
+        "product_name": "Хлеб",
+        "description": "Свежий, хрустящий",
+        "image": "images/i.jpeg",
+        "category": 1,
+        "price": 50,
+        "created_at": "2026-01-08T22:48:43.080Z",
+        "update_at": "2026-01-08T22:48:43.080Z"
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 3,
+    "fields": {
+        "product_name": "Мандарин",
+        "description": "мелкий, из Армении",
+        "image": "",
+        "category": 3,
+        "price": 88,
+        "created_at": "2026-01-08T22:58:35.641Z",
+        "update_at": "2026-01-08T22:58:35.641Z"
+    }
+}
+]
