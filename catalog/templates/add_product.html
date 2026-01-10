@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h2>Добавить товар (ручная обработка)</h2>
+
+            {% if errors %}
+            <div class="alert alert-danger">
+                <h5>Ошибки:</h5>
+                <ul class="mb-0">
+                    {% for error in errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            {% if messages %}
+            <div class="alert alert-success">
+                {% for message in messages %}
+                {{ message }}
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <form method="post" enctype="multipart/form-data" class="mt-3">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label">Название товара *</label>
+                    <input type="text" name="name" class="form-control"
+                           value="{{ name|default:'' }}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="category" class="form-label">Категория</label>
+                    <select name="category" id="category" class="form-control">
+                        <option value="">-- Выберите категорию --</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat.id }}"
+                                {% if category_id == cat.id|stringformat:"i" %}selected {% endif %}>
+                        {{ cat.category_name }} (ID: {{ cat.id }})
+                        </option>
+                        {% empty %}
+                        <option value="">Нет категорий в базе</option>
+                        {% endfor %}
+                    </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Цена (₽) *</label>
+            <input type="number" name="price" class="form-control"
+                   step="0.01" min="0" value="{{ price|default:'0' }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Описание</label>
+            <textarea name="description" class="form-control" rows="4">{{ description|default:'' }}</textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Изображение</label>
+            <input type="file" name="image" class="form-control" accept="image/*">
+        </div>
+
+
+
+        <button type="submit" class="btn btn-primary">Добавить</button>
+        <a href="{% url 'catalog:products_list' %}" class="btn btn-secondary">Отмена</a>
+        </form>
+
+        <div class="mt-4 alert alert-info">
+            <strong>Примечание:</strong> Поля "Дата создания" и "Дата обновления"
+            заполняются автоматически при сохранении товара.
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}
