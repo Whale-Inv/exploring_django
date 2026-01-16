@@ -22,9 +22,9 @@
     </style>
 </head>
 <body>
-{% include 'includes/inc_theme.html' %}
+{% include 'catalog/includes/inc_theme.html' %}
 <header data-bs-theme="dark">
-    {% include 'includes/inc_menu.html'%}
+    {% include 'catalog/includes/inc_menu.html'%}
 </header>
 <main>
     <section class="py-5 text-center container">
@@ -33,7 +33,7 @@
                 <p class="lead text-body-secondary">Skystore - это отличный вариант хранения ваших плагинов и примеров
                     кода, который вы бы хотели
                     продать.</p>
-                <p><a href="{% url 'catalog:contacts' %}" class="btn btn-primary my-2">Контакты</a> <a href="{% url 'catalog:add_product' %}"
+                <p><a href="{% url 'catalog:contacts' %}" class="btn btn-primary my-2">Контакты</a> <a href="{% url 'catalog:product_create' %}"
                                                                                                        class="btn btn-secondary my-2">добавить</a></p></div>
         </div>
     </section>
@@ -41,7 +41,7 @@
     {% block content %}
     {% endblock %}
 </main>
-{% include 'includes/inc_footer.html' %}
+{% include 'catalog/includes/inc_footer.html' %}
 <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
 </body>
 </html>

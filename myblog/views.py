@@ -1,14 +1,15 @@
-from django.core.paginator import PageNotAnInteger, EmptyPage, Paginator
-from django.views import View
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import render
-from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, CreateView
+from django.urls import reverse_lazy, reverse
+from django.views import View
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
-from catalog.models import Product, Category
+from myblog.models import MyPosts
 
 
-class ProductListView(ListView):
-    model = Product
+class PostListView(ListView):
+    model = MyPosts
+    template_name = 'myblog/post_list.html'
 
     def get_paginate_by(self, queryset):
         """Определяем количество товаров на странице"""
@@ -23,14 +24,13 @@ class ProductListView(ListView):
         except (ValueError, TypeError):
             pass
 
-        # Если что-то пошло не так, возвращаем 12
+        # Если что-то пошло не так, возвращаем 6
         return 6
 
     def get_queryset(self):
         """Сортировка и фильтрация"""
         queryset = super().get_queryset()
-        # Добавьте фильтрацию, если нужно
-        # queryset = queryset.filter(is_active=True)
+        queryset = queryset.filter(is_published=True)
         return queryset.order_by('-created_at')
 
     def get_context_data(self, **kwargs):
@@ -69,29 +69,58 @@ class ProductListView(ListView):
         return context
 
 
-class ProductDetailView(DetailView):
-    model = Product
+class PostDetailView(DetailView):
+    model = MyPosts
+    template_name = 'myblog/post_detail.html/'
+
+    def get_object(self, queryset=None):
+        self.object = super().get_object(queryset)
+        self.object.views_count += 1
+
+        if self.object.views_count == 100:
+            from django.core.mail import send_mail
+            from django.conf import settings
+
+            send_mail(
+                subject=f'🎉 100 просмотров! "{self.object.title}"',
+                message=f'Поздравляем! Ваш пост достиг 100 просмотров.',
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[settings.ADMIN_EMAIL],
+            )
+            print("Письмо отправлено!")
+
+        self.object.save()
+        return self.object
 
 
-class ProductCreateView(CreateView):
-    model = Product
-    fields = ["product_name", "description", "image", "category", "price"]
-    success_url = reverse_lazy('catalog:product_list')
+
+class PostCreateView(CreateView):
+    model = MyPosts
+    template_name = 'myblog/post_form.html'
+    fields = ["title", "content", "image", "is_published"]
+    success_url = reverse_lazy('myblog:post_list')
 
 
-def home(request):
-    # Получаем последние 5 продуктов
-    latest_products = Product.objects.all().order_by('-id')[:5]
+class PostUpdateView(UpdateView):
+    model = MyPosts
+    template_name = 'myblog/post_form.html'
+    fields = ["title", "content", "image", "is_published"]
+    success_url = reverse_lazy('myblog:post_list')
 
-    # Выводим в консоль
-    print(f"\nПоследние 5 продуктов (всего в базе: {Product.objects.count()}):")
-    for product in latest_products:
-        print(f"  - {product.product_name}")
-    return render(request, "catalog/home.html", {'products': latest_products})
+    def get_success_url(self):
+        return reverse('myblog:post_detail', args=[self.kwargs.get('pk')])
+
+
+class PostDeleteView(DeleteView):
+    model = MyPosts
+    template_name = 'myblog/post_confirm_delete.html'
+    success_url = reverse_lazy('myblog:post_list')
+
+
 
 
 class ContactView(View):
-    template_name = 'catalog/contacts.html'
+    template_name = 'myblog/contacts.html'
 
     def get(self, request, *args, **kwargs):
         return render(request, self.template_name)
@@ -113,5 +142,4 @@ class ContactView(View):
         }
 
         # Рендерим шаблон успешной отправки
-        return render(request, "catalog/contact_success.html", context)
-
+        return render(request, "myblog/contact_success.html", context)
