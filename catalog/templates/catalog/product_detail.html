@@ -14,6 +14,14 @@
                                 <a href="{% url 'catalog:product_list' %}" class="btn btn-secondary"
                                    tabindex="-1" role="button" aria-disabled="false">Назад</a>
                             </div>
+                            <div class="btn-group">
+                                <a href="{% url 'catalog:product_update' product.pk %}" class="btn btn-secondary"
+                                   tabindex="-1" role="button" aria-disabled="false">Редактировать</a>
+                            </div>
+                            <div class="btn-group">
+                                <a href="{% url 'catalog:product_delete' product.pk %}" class="btn btn-danger"
+                                   tabindex="-1" role="button" aria-disabled="false">Удалить</a>
+                            </div>
                             <small class="text-body-secondary">{{ object.price|price_with_currency }}</small></div>
                     </div>
                 </div>
