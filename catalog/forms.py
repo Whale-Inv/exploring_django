@@ -63,3 +63,4 @@ class ProductForm(ModelForm):
             raise ValidationError(
                 f'Размер файла не должен превышать 5 МБ. Текущий размер: {image.size / (1024 * 1024):.2f} МБ'
             )
+        return image
