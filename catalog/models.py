@@ -1,5 +1,7 @@
 from django.db import models
 
+from users.models import User
+
 
 class Category(models.Model):
 
@@ -39,11 +41,16 @@ class Product(models.Model):
     price = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
+    owner = models.ForeignKey(User, verbose_name="Владелец продукта", help_text="Укажите владельца продукта", blank=True, null=True, on_delete=models.SET_NULL)
+    is_published = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = "Продукт"
         verbose_name_plural = "Продукты"
         ordering = ["product_name", "category"]
+        permissions = [
+            ("can_unpublish_product", "can unpublish product")
+        ]
 
     def __str__(self):
         return f"Наименование: {self.product_name}, Цена: {self.price}"

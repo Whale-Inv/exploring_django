@@ -64,3 +64,9 @@ class ProductForm(ModelForm):
                 f'Размер файла не должен превышать 5 МБ. Текущий размер: {image.size / (1024 * 1024):.2f} МБ'
             )
         return image
+
+
+class ProductModeratorForm(ModelForm):
+    class Meta:
+        model = Product
+        fields = ("is_published",)

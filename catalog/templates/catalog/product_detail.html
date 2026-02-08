@@ -1,5 +1,6 @@
 {% extends 'catalog/base.html' %}
 {% load my_tags %}
+{% load auth_extras %}
 {% block content %}
 <div class="album py-5 bg-body-tertiary">
     <div class="container">
@@ -14,6 +15,7 @@
                                 <a href="{% url 'catalog:product_list' %}" class="btn btn-secondary"
                                    tabindex="-1" role="button" aria-disabled="false">Назад</a>
                             </div>
+                            {% if user == object.owner or user|has_group:"Модератор продуктов" %}
                             <div class="btn-group">
                                 <a href="{% url 'catalog:product_update' product.pk %}" class="btn btn-secondary"
                                    tabindex="-1" role="button" aria-disabled="false">Редактировать</a>
@@ -22,6 +24,7 @@
                                 <a href="{% url 'catalog:product_delete' product.pk %}" class="btn btn-danger"
                                    tabindex="-1" role="button" aria-disabled="false">Удалить</a>
                             </div>
+                            {% endif %}
                             <small class="text-body-secondary">{{ object.price|price_with_currency }}</small></div>
                     </div>
                 </div>
