@@ -1,5 +1,6 @@
 {% extends 'myblog/base.html' %}
 {% load static %}
+{% load auth_extras %}
 
 {% block title %}<title>Список статей{% if object_list.number %} - Страница {{ object_list.number }} {% endif %}</title>{% endblock %}
 
@@ -73,6 +74,7 @@
                                class="btn btn-outline-primary btn-sm">
                                 <i class="fas fa-eye me-1"></i>Подробнее
                             </a>
+                            {% if user|has_group:"Контент-менеджер" %}
                             <a href="{% url 'myblog:post_update' post.pk %}"
                                class="btn btn-outline-primary btn-sm">
                                 <i class="fas fa-eye me-1"></i>Редактировать
@@ -81,6 +83,7 @@
                                class="btn btn-outline-danger btn-sm">
                                 <i class="fas fa-eye me-1"></i>Удалить
                             </a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
