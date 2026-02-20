@@ -8,6 +8,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 
 from catalog.forms import ProductForm, ProductModeratorForm
 from catalog.models import Product, Category
+from catalog.services import get_products_from_cache, get_products_by_category
 
 
 class ProductListView(ListView):
@@ -30,11 +31,7 @@ class ProductListView(ListView):
         return 6
 
     def get_queryset(self):
-        """Сортировка и фильтрация"""
-        queryset = super().get_queryset()
-        # Добавьте фильтрацию, если нужно
-        queryset = queryset.filter(is_published=True)
-        return queryset.order_by('-created_at')
+        return get_products_from_cache()
 
     def get_context_data(self, **kwargs):
         """Расширяем контекст"""
@@ -148,3 +145,66 @@ class ContactView(View):
         # Рендерим шаблон успешной отправки
         return render(request, "catalog/contact_success.html", context)
 
+
+class CategoryProductsView(ListView):
+    model = Product
+    template_name = 'catalog/category_products.html'
+    context_object_name = 'products'
+    paginate_by = 6
+
+    def get_paginate_by(self, queryset):
+        """Определяем количество товаров на странице"""
+        # Получаем значение из GET или используем 6 по умолчанию
+        per_page = self.request.GET.get('per_page', '6')
+
+        try:
+            per_page = int(per_page)
+            # Проверяем разрешенные значения
+            if per_page in [3, 6, 12]:
+                return per_page
+        except (ValueError, TypeError):
+            pass
+
+        # Если что-то пошло не так, возвращаем 6
+        return 6
+
+    def get_queryset(self):
+        category_id = self.kwargs['category_id']
+        # Используем вашу сервисную функцию
+        return get_products_by_category(category_id)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Добавляем категорию в контекст для шаблона
+        category_id = self.kwargs['category_id']
+        context['category'] = Category.objects.get(id=category_id)
+        # Динамическая пагинация
+        per_page = self.request.GET.get('per_page', 6)
+        try:
+            per_page = int(per_page)
+            if per_page not in [3, 6, 12]:
+                per_page = 3
+        except (ValueError, TypeError):
+            per_page = 6
+
+        # Обновляем paginate_by
+        self.paginate_by = per_page
+
+        # Получаем queryset заново с новым paginate_by
+        queryset = self.get_queryset()
+        paginator = Paginator(queryset, per_page)
+        page = self.request.GET.get('page', 1)
+
+        try:
+            products = paginator.page(page)
+        except PageNotAnInteger:
+            products = paginator.page(1)
+        except EmptyPage:
+            products = paginator.page(paginator.num_pages)
+
+        context['products'] = products
+        context['per_page'] = per_page
+        context['page_obj'] = products  # для совместимости с шаблонами
+        context['paginator'] = paginator
+
+        return context
